@@ -1,0 +1,12 @@
+{
+  "env": "<H5>or<WXAPP>or<APP>",
+  "type": "<普通商户>or<服务商>",
+  "appId": "<your_appId>",
+  "mchId": "<your_mchId>",
+  "notifyUrl": "<接收微信支付的通知的URL,本服务需要暴露给外界,并需要在微信支付后台设置>",
+  "partnerKey": "<your_partnerKey>",
+  "pfx": "<微信的P12文件>",
+  "passphrase": "<your_passphrase>一般与mchId相同",
+  "_payUrl": "<支付目录,在此SDK中不用,在H5支付中需配置在微信支付后台>",
+  "cbNotifyUrl": "<本服务接受微信通知后,再通知其他微服务处理实际订单的URL>"
+}
