@@ -107,7 +107,18 @@ export default class Apis {
   };
 
   _notifyPayment = async (notification) => {
-
+    let cbUrl = this.cfg && this.cfg.cbNotifyUrl;
+    if (!cbUrl) {
+      throw new Error('no cbNotifyUrl!');
+    }
+    let retobj = await requestPost(cbUrl, notification);
+    if (!retobj) {
+      throw new Error('no result from cbUrl!');
+    }
+    if (retobj.errcode) {
+      throw retobj;
+    }
+    return retobj;
   }
 
   /**

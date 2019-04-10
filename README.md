@@ -125,7 +125,8 @@ spec:
   partnerKey: '7gwY3krPn33c1lBzO11YXA1TdbSsjXT1',
   pfx: fs.readFileSync(__dirname + '/apiclient_cert_1525312341.p12'),
   passphrase: '1525312341',
-  _payUrl: 'http://m.qingshansi.cn/eshop'
+  _payUrl: 'http://m.qingshansi.cn/eshop',
+  cbNotifyUrl: "http://sharks-api/apis/v1/mqtt/pay_notify"
 }
 ```
 多个支付:
@@ -139,7 +140,8 @@ spec:
   partnerKey: '7gwY3krPn33c1lBzO11YXA1TdbSsjXT1',
   pfx: fs.readFileSync(__dirname + '/apiclient_cert_1525312341.p12'),
   passphrase: '1525312341',
-  _payUrl: 'http://m.qingshansi.cn/eshop'
+  _payUrl: 'http://m.qingshansi.cn/eshop',
+  cbNotifyUrl: "http://sharks-api/apis/v1/mqtt/pay_notify"
 },{
   env: 'APP',
   type: '普通商户',
@@ -149,13 +151,79 @@ spec:
   partnerKey: '7gwY3krPn33c1lBzO11YXA1TdbSsjXT1',
   pfx: fs.readFileSync(__dirname + '/apiclient_cert_1525312341.p12'),
   passphrase: '1525312341',
-  _payUrl: 'http://m.qingshansi.cn/eshop'
+  _payUrl: 'http://m.qingshansi.cn/eshop',
+  cbNotifyUrl: "http://sharks-api/apis/v1/mqtt/pay_notify"
 }]
 ```
 
 ## 用apidoc生成接口文档
 ```
 npm run apidoc
+```
+
+## 供微信通知用接口
+是`POST /apis/v1/wepay/pay_notify`,其中会调用其他服务的订单处理服务.此订单处理服务在`cbNotifyUrl`中指定.
+
+
+## API接口 (使用HTTP)
+本考虑使用thrift,后来考虑到主要性能瓶颈在于调用微信服务器,而不在于内部通信,就算用thrift加快内部通信速度,于实际总调用时长无太大关系.
+1. `POST /apis/v1/wepay/get_pay_request_params`,调用统一下单接口,返回供微信H5使用的支付
+```
+参数:
+{
+  id: '5ba27cc3a70db45dd108b53f', // 订单id,
+  fee: 1200, // 订单金额,以分为单位
+  body: '商品描述:袜子1件+衣服2件', // 必选, string(128) 商品描述
+  detail: '商品详情:2019赛季球衣 蓝色 L 高领 2件; 球袜 红色 小 1件' // 可选, string(600) 商品详情
+  attach: '附加数据:福州路店', // 可选, string(127) 附加数据
+}
+正确返回:
+{
+  errcode: 0,
+  result: {
+    xxx
+  }
+}
+错误返回:
+{
+  errcode: !=0
+}
+```
+2. `POST /apis/v1/wepay/refund`,调用退款接口, 
+```
+参数:
+{
+  out_refund_no: '5ba27cc3a112233554444331', //退款单ID,在系统中一般有张退款单表
+  out_trade_no: '5ba27cc3a70db45dd108b53f', // 订单id,
+  total_fee: 1200, // 订单总金额,
+  refund_fee: 1100, // 本次退款金额,以分为单位,必须小于等于total_fee,并且本订单所有退款总额不超过total_fee
+}
+正确返回:
+{
+  errcode: 0,
+  result: {
+    xxx
+  }
+}
+错误返回:
+{
+  errcode: !=0
+}
+```
+3. `POST /apis/v1/wepay/get_sign_key` 获取测试用sign_key
+```
+参数:无
+正确返回:
+{
+  errcode: 0,
+  result: {
+    xxx
+  }
+}
+错误返回:
+{
+  errcode: !=0
+}
 ```
 
 ## TODO
