@@ -102,6 +102,7 @@ spec:
 配置文件的内容:
 ```
 {
+  "name":"此支付的名称,方便分辨,没有实际意义",
   "env": "<H5>or<WXAPP>or<APP>",
   "type": "<普通商户>or<服务商>",
   "appId": "<your_appId>",
